@@ -23,4 +23,4 @@ To get started with the collaborative code editor, follow these steps:
 1. Clone this repository to your local machine:
 
    ```bash
-   git clone <repository-url>
+      gcl git@github.com:oularefodos/PairScript.git
