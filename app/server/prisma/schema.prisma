@@ -1,0 +1,75 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum UserRole {
+  ADMIN
+  SUPER_ADMIN
+  USER
+}
+
+model User {
+  id          String      @id @default(uuid())
+  email       String      @unique
+  password    String
+  store       Store[]
+  user        Order[]
+  role        UserRole    @default(USER)
+  rate        ProductRate[]
+}
+
+model Store {
+  id              String      @id @default(uuid())
+  name            String   @unique
+  description     String?
+  profileImgLink  String?
+  owner           User @relation(fields: [ownerId], references: [id])
+  ownerId         String
+  product         Product[]
+}
+
+model Product {
+  id            String      @id @default(uuid())
+  title         String   @unique
+  description   String?
+  imgLink       String
+  price         Int
+  store         Store @relation(fields: [storeId], references: [id])
+  storeId       String
+  published     Boolean  @default(false)
+  createdAt     DateTime @default(now())
+  orders        Order[]
+  updatedAt     DateTime @updatedAt
+  rate          ProductRate[]
+}
+
+model Order {
+  id          String      @id @default(uuid())
+  userId      String
+  productId   String
+  quantity    String
+  totalPrice  Float
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  product     Product @relation(fields: [productId], references: [id])
+  user        User    @relation(fields: [userId], references: [id])
+}
+
+model ProductRate {
+  id        String      @id @default(uuid())
+  productId String
+  userId    String
+  rate      Int
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  product   Product  @relation(fields: [productId], references: [id])
+  user      User     @relation(fields: [userId], references: [id])
+}
